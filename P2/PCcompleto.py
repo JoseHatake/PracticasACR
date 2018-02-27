@@ -1,20 +1,19 @@
 import threading
-from asyncio import Semaphore
 
-s = Semaphore()
+s = threading.Semaphore(1)
 
-def consumidor(n):
+def consumidor():
 	counter = 0
-	while counter < n:
+	while counter < 20:
 		s.acquire()
 		contador[0] -= 1
 		counter += 1
 		print "Valor actual: ",contador[0]
 		s.release()
 
-def productor(m):
+def productor():
 	counter = 0
-	while counter < n:
+	while counter < 20:
 		s.acquire()
 		contador[0] += 1
 		counter += 1
@@ -24,8 +23,8 @@ def productor(m):
 contador = [1]
 numeroDeIteraciones = 20
 
-hiloProductor = threading.Thread(target=productor,args=(numeroDeIteraciones))
-hiloConsumidor = threading.Thread(target=consumidor,args=(numeroDeIteraciones))
+hiloProductor = threading.Thread(target=productor)
+hiloConsumidor = threading.Thread(target=consumidor)
 
 hiloConsumidor.start()
 hiloProductor.start()
