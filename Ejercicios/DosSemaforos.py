@@ -1,19 +1,21 @@
 import threading
 
-s = threading.Semaphore(1)
+s1 = threading.Semaphore(1)
+s2 = threading.Semaphore(0)
 
 def consumidor():
-	s.acquire()
+	s2.acquire()
 	print "Consumidor - Valor actual: ",contador[0]
-	s.release()
+	s1.release()
 
 def productor():
-	s.acquire()
+	s1.acquire()
 	contador[0] += 1
 	print "Productor - Valor actual: ",contador[0]
-	s.release()
+	s2.release()
 
-contador = [1]
+contador = []
+contador.append(0)
 
 for x in xrange(1,20):
 	hiloProductor = threading.Thread(target=productor)
