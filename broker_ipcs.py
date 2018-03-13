@@ -44,39 +44,41 @@ k = 100
 h = 4	
 
 mem_map = memorymap_open(s=n, t=h)
-smp = Semaphore(1)
-smc = Semaphore(0)
+#smp = Semaphore(1)
+#smc = Semaphore(0)
 mtx = semaphore()
+smp = semaphore()
+smc = semaphore()
 
-#smp.open(filename="semaphore.txt", value=1, n=h)
-#smc.open(filename="semaphore.txt", value=0, n=h)
+smp.open(filename="producer.txt", value=1, n=h)
+smc.open(filename="consumer.txt", value=0, n=h)
 mtx.open(filename="mutex.txt", value=1, n=h)
 
 def consumidor(t):
 	f = open(str(t) + '.txt', 'w+')
 	
 	i = 0
-	smc.acquire()
+	smc.wait(t)
 	while i < k:
 		mtx.wait(t)
 		#print("Consumer: " + str(mem_map[(t*n):(t+1)*n]))
 		f.write(str(mem_map[(t*n):(t+1)*n], 'utf-8') + '\n')
 		mtx.post(t)
 		i += 1
-	smp.release()
+	smp.post(t)
 	
 	f.close()
 
 def productor(t,c):
 	i = 0
 	chr = str(c)*n
-	smp.acquire()
+	smp.wait(t)
 	while i < k:
 		mtx.wait(t)
 		mem_map[(t*n):(t+1)*n] = bytes(chr, 'utf-8')
 		mtx.post(t)
 		i += 1
-	smc.release()
+	smc.post(t)
 
 tp = []
 tc = []
@@ -85,9 +87,6 @@ for i in range(0,h):
 	t = threading.Thread(target=productor, args=[i,i])
 	tp.append(t)
 	t.start()
-
-for i in range(0,h):
-	tp[i].join()
 	
 for i in range(0,h):
 	t = threading.Thread(target=consumidor, args=[i])
@@ -95,4 +94,5 @@ for i in range(0,h):
 	t.start()
 
 for i in range(0,h):
+	tp[i].join()
 	tc[i].join()
