@@ -6,7 +6,7 @@ from asyncio import Semaphore
 class semaphore:
 	def __init__(self):
 		self.map = []
-		self.sem = []		
+		self.sem = []
 		
 	def open(self, filename, value, n):
 		with open(filename, "wb") as fp:
@@ -85,14 +85,14 @@ for i in range(0,h):
 	t = threading.Thread(target=productor, args=[i,i])
 	tp.append(t)
 	t.start()
-
-for i in range(0,h):
-	tp[i].join()
 	
 for i in range(0,h):
 	t = threading.Thread(target=consumidor, args=[i])
 	tc.append(t)
 	t.start()
+
+for i in range(0,h):
+	tp[i].join()
 
 for i in range(0,h):
 	tc[i].join()
