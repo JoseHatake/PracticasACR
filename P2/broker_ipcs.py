@@ -40,43 +40,56 @@ def memorymap_open(s, t):
 	return mmap.mmap(f.fileno(), 0)
 
 n = 20
-k = 100
-h = 4	
+k = 10000
+h = 3
+m = 4
 
 mem_map = memorymap_open(s=n, t=h)
-smp = Semaphore(1)
-smc = Semaphore(0)
-mtx = semaphore()
+#smp = Semaphore(1)
+#smc = Semaphore(0)
+buff0 = []
+buff1 = []
+buff2 = []
 
-#smp.open(filename="semaphore.txt", value=1, n=h)
-#smc.open(filename="semaphore.txt", value=0, n=h)
-mtx.open(filename="mutex.txt", value=1, n=h)
+mtx = semaphore()
+smp = semaphore()
+smc = semaphore()
+
+smp.open(filename="producer.txt", value=1, n=n)
+smc.open(filename="consumer.txt", value=0, n=n)
+mtx.open(filename="mutex.txt", value=1, n=m)
 
 def consumidor(t):
-	f = open(str(t) + '.txt', 'w+')
-	
+	#f = open(str(t) + '.txt', 'w+')
+	tmp = ""
 	i = 0
-	smc.acquire()
+	smc.wait(t)
 	while i < k:
 		mtx.wait(t)
 		#print("Consumer: " + str(mem_map[(t*n):(t+1)*n]))
-		f.write(str(mem_map[(t*n):(t+1)*n], 'utf-8') + '\n')
+		#f.write(str(mem_map[(t*n):(t+1)*n], 'utf-8') + '\n')
+		tmp = str(mem_map[(t*n):(t+1)*n], 'utf-8')
+		if tmp[0] == "0":
+			buff0.append(tmp + "\n")
+		elif tmp[0] == "1":
+			buff1.append(tmp + "\n")
+		else:
+			buff2.append(tmp + "\n")
 		mtx.post(t)
 		i += 1
-	smp.release()
-	
-	f.close()
+	smp.post(t)
 
 def productor(t,c):
 	i = 0
 	chr = str(c)*n
-	smp.acquire()
+	smp.wait(t)
 	while i < k:
+		t = (t + 1) % 3
 		mtx.wait(t)
 		mem_map[(t*n):(t+1)*n] = bytes(chr, 'utf-8')
 		mtx.post(t)
 		i += 1
-	smc.release()
+	smc.post(t)
 
 tp = []
 tc = []
@@ -96,3 +109,18 @@ for i in range(0,h):
 
 for i in range(0,h):
 	tc[i].join()
+
+f1 = open(str(0) + '.txt', 'w+')
+f2 = open(str(1) + '.txt', 'w+')
+f3 = open(str(2) + '.txt', 'w+')
+
+for x in buff0:
+	f1.write(x)
+for x in buff1:
+	f2.write(x)
+for x in buff2:
+	f3.write(x)
+
+f1.close()
+f2.close()
+f3.close()
