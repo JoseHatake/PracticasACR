@@ -66,6 +66,7 @@ def consumidor(t):
 	smc.wait(t)
 	while i < k:
 		mtx.wait(t)
+		#t = (t + 1) % 3
 		#print("Consumer: " + str(mem_map[(t*n):(t+1)*n]))
 		#f.write(str(mem_map[(t*n):(t+1)*n], 'utf-8') + '\n')
 		tmp = str(mem_map[(t*n):(t+1)*n], 'utf-8')
