@@ -1,6 +1,6 @@
 import socket
 import asyncio
-import cmd, sys
+import cmd, sys, os
 import threading as thread
 from queue import Queue
 
@@ -46,6 +46,18 @@ class ServerShell(cmd.Cmd):
 
 def console():
 	ServerShell().cmdloop();
+	
+def show_data(addr,info):
+	os.system('cls') #CAMBIAR POR 'CLEAR' para LINUCS
+	print ('╔' + '═' * 78 + '╗')
+	print ('║' + ('MONITOR:' + str(addr)).center(78) + '║')
+	print ('╠' + '═' * 78 + '╣')
+	print ('║' + ('Uso de CPU:'  		 + str(info[0])).center(78) + '║')
+	print ('║' + ('Uso de MEM:' 		 + str(info[1])).center(78) + '║')
+	print ('║' + ('Numero de Procesos:'  + str(info[2])).center(78) + '║')
+	print ('║' + ('Numero de Servicios:' + str(info[3])).center(78) + '║')
+	print ('╚' + "═" * 78 + '╝')
+	
 
 def servicio(conn,client_address,queue):
 	try:
@@ -61,11 +73,7 @@ def servicio(conn,client_address,queue):
 					data = recv.decode('utf-8')
 					info = data.split('&')
 					if(len(data) > 0 and queue.empty()):
-						print("Cliente: " + str(client_address[0]) + "\n")
-						print("\t- Uso de CPU: " + info[0] + "\n")
-						print("\t- Uso de memoria: " + info[1] + "\n")
-						print("\t- Numero de procesos en ejecucion: " + info[2] + "\n")
-						print("\t- Numero de servicios en ejecucion: " + info[3] + "\n\n")
+						show_data(client_address, info)
 					else:
 						break
 				else:
