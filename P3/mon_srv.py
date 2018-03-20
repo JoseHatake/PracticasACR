@@ -101,6 +101,3 @@ while True:
 	
 	t = thread.Thread(target=servicio,args=[conn,addr,queue])
 	t.start()
-	
-	
-	
