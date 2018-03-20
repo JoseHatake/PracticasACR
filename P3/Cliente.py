@@ -12,7 +12,6 @@ print ("Conectando a %s puerto %s" % server_address)
 sock.connect(server_address)
 
 try:
-<<<<<<< HEAD
     while True:
         print("Mensaje a enviar")
         #message = input()
@@ -22,8 +21,7 @@ try:
         else:
             sock.sendall(bytes(message,"utf-8"))
             break
- 
-=======
+            
 	print("Mensaje a enviar")
 	message = input()
 		
@@ -49,8 +47,6 @@ try:
 		sock.sendall(bytes(str(users),"utf-8"))
 		
 		time.sleep(1)
-
->>>>>>> 1ae1e4042102a357e5a3676d0105e1d57892026d
 finally:
     print ("Cerrando socket")
 sock.close()
