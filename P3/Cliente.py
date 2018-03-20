@@ -5,20 +5,11 @@ import sys
  
 # Creando un socket TCP/IP
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
- 
+
 # Conecta el socket en el puerto cuando el servidor esté escuchando
 server_address = ('localhost', 10000)
 print ("Conectando a %s puerto %s" % server_address)
 sock.connect(server_address)
-
-print ('-' + "Hi! This is a text-based GUI!".center(78, 'h') + '-')
-print ('+' + "-" * 78 + '+')
-print ('|' + "OPTIONS".center(78) + '|')
-print ('+' + "-" * 78 + '+')
-print ('|' + "1 - Quit".center(78) + '|')
-for i in range(1, 7):
-    print ('|' + " " * 78 + '|')
-print ('+' + "-" * 78 + '+')
 
 try:
 	while True:
@@ -46,16 +37,7 @@ try:
 
 			sock.sendall(bytes(str(infoCompleta),"utf-8"))
 
-			#sock.sendall(bytes(str(cpu_usage),"utf-8"))
-			#sock.sendall(bytes(str(cpu_logical),"utf-8"))
-			#sock.sendall(bytes(str(cpu_physical),"utf-8"))
-			#sock.sendall(bytes(str(cpu_states),"utf-8"))
-			#sock.sendall(bytes(str(cpu_freq),"utf-8"))
-			#sock.sendall(bytes(str(mem),"utf-8"))
-			#sock.sendall(bytes(str(diu),"utf-8"))
-			#sock.sendall(bytes(str(users),"utf-8"))
-			
-			time.sleep(5)
+			time.sleep(1)
 		else:
 			continue
 
