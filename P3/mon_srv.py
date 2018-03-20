@@ -7,8 +7,6 @@ from queue import Queue
 conexiones = []
 locks = []
 
-LOK = asyncio.Semaphore(1)
-
 class ServerShell(cmd.Cmd):
 	intro = 'Server Ready, type help for a list of permitted commands.\n'
 	prompt = 'SERVER>>'
@@ -49,30 +47,27 @@ class ServerShell(cmd.Cmd):
 def console():
 	ServerShell().cmdloop();
 
-def servicio(conn,client_address,colaFlag):
+def servicio(conn,client_address,queue):
 	try:
 		print ("Conexion desde", client_address)
-		flag = True
-
 		# Recibe los datos en trozos y reetransmite
-		while flag:
-			num = locks[0].get()
+		while True:
+			num = queue.get()
 			while True:
 				if(num == 0):
+					sent = conn.sendall(bytes('show',"utf-8"))
 					recv = conn.recv(1024)
 					data = recv.decode('utf-8')
-					if(len(data) > 0):
-						if locks[0].empty():
-							print ("Cliente: " + str(client_address[0]) + " Recibido: " + data)
+					if(len(data) > 0 and queue.empty()):
+						print ("Cliente: " + str(client_address[0]) + " Recibido: " + data + '\r')
 					else:
-						flag = False
 						break
 				else:
 					break
 	finally:
 		# Cerrando conexion
 		conexiones.remove(conn)
-		locks.remove(colaFlag)
+		locks.remove(queue)
 		conn.close()
 
 #Crea thread de interaccion
@@ -95,17 +90,11 @@ while True:
 	#Agregar conexion a lista de conexiones vigentes
 	conexiones.append(conn)
 	#Agregar nuevo candado por cliente conectado
-	cola = Queue()
-	locks.append(cola)
+	queue = Queue()
+	locks.append(queue)
 	
-	t = thread.Thread(target=servicio,args=[conn,addr,cola])
+	t = thread.Thread(target=servicio,args=[conn,addr,queue])
 	t.start()
-	
-	
-	
-	
-	
-	
 	
 	
 	
