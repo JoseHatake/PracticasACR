@@ -12,7 +12,8 @@ sock.connect(server_address)
 try:
     while True:
         print("Mensaje a enviar")
-        message = input()
+        #message = input()
+        message = "Hola como estas"
         if message != "exit":
             sock.sendall(bytes(message,"utf-8"))
         else:
