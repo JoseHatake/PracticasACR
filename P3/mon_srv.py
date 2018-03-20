@@ -65,7 +65,7 @@ def servicio(conn,client_address,lock):
 		while True:
 			recv = conn.recv(1024)
 			data = recv.decode('utf-8')
-			if(len(data) > 0):
+			if(len(data) > 0 and not lock.locked()):
 				if data != "exit":
 					print ("Cliente: " + str(client_address[0]) + " Recibido: " + data)
 				else:
