@@ -40,8 +40,8 @@ def memorymap_open(s, t):
 	return mmap.mmap(f.fileno(), 0)
 
 n = 20
-k = 10
-h = 3	
+k = 10000000
+h = 3
 m = 4
 
 mem_map = memorymap_open(s=n, t=h)
