@@ -22,11 +22,12 @@ class ServerShell(cmd.Cmd):
 		if(sel >= len(locks)):
 			print('Numero de clientes conectados:', sel)
 		else:
-			if(not locks[sel].locked()):
+			if(not locks[sel].acquire(blocking=False)):
 				print('Recibiendo información del ID:', sel)
-				print(locks[sel])
-				locks[sel].acquire()
-				print(locks[sel])
+				objSem = locks[sel]
+				print(objSem.acquire(blocking=False))
+				objSem.acquire(blocking=True)
+				print(objSem.acquire(blocking=False))
 			else:
 				print('El hilo no está bloqueado:', sel)
 		
@@ -36,10 +37,10 @@ class ServerShell(cmd.Cmd):
 		if(sel >= len(locks)):
 			print('Numero de clientes conectados:', sel)
 		else:
-			if(locks[sel].locked()):
+			if(locks[sel].acquire(blocking=False)):
 				print('Bloqueando información del ID:', sel)
 				locks[sel].release()
-				print(locks[sel].locked())
+				print(locks[sel].acquire(blocking=False))
 			else:
 				print('El hilo está bloqueado:', sel)
 		
@@ -60,12 +61,16 @@ def console():
 def servicio(conn,client_address,lock):
 	try:
 		print ("Conexion desde", client_address)
-		
+		flag = True
 		# Recibe los datos en trozos y reetransmite
 		while True:
 			recv = conn.recv(1024)
 			data = recv.decode('utf-8')
-			if(len(data) > 0 and not lock.locked()):
+			
+			if flag != lock.acquire(blocking=False):
+				print(lock.acquire(blocking=False))
+			flag = lock.acquire()
+			if(len(data) > 0 and lock.acquire(blocking=False)):
 				if data != "exit":
 					print ("Cliente: " + str(client_address[0]) + " Recibido: " + data)
 				else:
@@ -97,9 +102,9 @@ while True:
 	#Agregar conexion a lista de conexiones vigentes
 	conexiones.append(conn)
 	#Agregar nuevo candado por cliente conectado
-	lock = asyncio.Semaphore(1)
+	lock = thread.Semaphore(1)
 	locks.append(lock)
-	print(lock.locked())
+	print(lock.acquire(blocking=False))
 	
 	t = thread.Thread(target=servicio,args=[conn,addr,lock])
 	t.start()
