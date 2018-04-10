@@ -19,7 +19,7 @@ server_address = ('localhost', 8090)
 print ("Conectando a %s puerto %s" % server_address)
 sock.connect(server_address)
 
-ORDER = 'DOWN'
+ORDER = 'SEND'
 #file = 'pr3.pdf'
 file = 'tesla.jpg'
 

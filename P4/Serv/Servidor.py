@@ -8,15 +8,12 @@ def recev_file(addresses,nombres,numero):
     while True:
         data, client_address = sock.recvfrom(200)
         count = 0
+        count = addresses.index(client_address)
+        sock.sendto(bytes("Siguiente",'utf-8'),client_address)
         if not data:
             counter += 1
-            print(counter, numero)
             if counter == numero:
                 break
-        while client_address != addresses[count]:
-            print (client_address, addresses[count])
-            count += 1
-
         archivos[count].extend(data)
 
     count = 0
@@ -33,7 +30,7 @@ server_address = ('localhost', 10000)
 print ("Direccion del servidor %s en el puerto %s" % server_address)
 sock.bind(server_address)
 
-numeroDeConexiones = 3
+numeroDeConexiones = 2
 count = 0
 address = []
 names = []

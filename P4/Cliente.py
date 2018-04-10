@@ -6,8 +6,8 @@ def send_file(file):
         while True:
             cont = f.read(200)
             sock.sendto(cont,servidor_address)
+            data = sock.recvfrom(200)
             if not cont:
-            	print(cont)
             	return "Archivo enviado!"
 
 #Se instancia el servidor y se publica para que se le puedan enviar paquetes
